@@ -70,7 +70,7 @@ $std = new stdClass([
     ])
 ]);
 
-// $store = new \MSBios\Json\Store($arr);
-$store = new \MSBios\Json\Store($str);
+$store = new \MSBios\Json\Store($arr);
+// $store = new \MSBios\Json\Store($str);
 // $store = new \MSBios\Json\Store($std);
-var_dump($store->find("$..store.book[0].category"));
+var_dump($store->find("$..store.book[1].category"));
