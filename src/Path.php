@@ -1,9 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: judzhin
- * Date: 8/14/17
- * Time: 4:44 PM
+ * @access protected
+ * @author Judzhin Miles <info[woof-woof]msbios.com>
  */
 
 namespace MSBios\Json;
