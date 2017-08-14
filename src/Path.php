@@ -41,7 +41,6 @@ class Path
         $x = $this->normalize($expr);
         $this->obj = $obj;
         if ($expr && $obj && ($this->resultType == "VALUE" || $this->resultType == "PATH")) {
-
             $this->trace(preg_replace("/^\\$;/", "", $x), $obj, "$");
 
             if (count($this->result)) {
@@ -57,21 +56,21 @@ class Path
     {
         // Replaces filters by #0 #1...
         $expression = preg_replace_callback(
-            array("/[\['](\??\(.*?\))[\]']/", "/\['(.*?)'\]/"),
-            array(&$this, "tempFilters"),
+            ["/[\['](\??\(.*?\))[\]']/", "/\['(.*?)'\]/"],
+            [&$this, "tempFilters"],
             $expression
         );
 
         // ; separator between each elements
         $expression = preg_replace(
-            array("/'?\.'?|\['?/", "/;;;|;;/", "/;$|'?\]|'$/"),
-            array(";", ";..;", ""),
+            ["/'?\.'?|\['?/", "/;;;|;;/", "/;$|'?\]|'$/"],
+            [";", ";..;", ""],
             $expression
         );
 
         // Restore filters
-        $expression = preg_replace_callback("/#([0-9]+)/", array(&$this, "restoreFilters"), $expression);
-        $this->result = array(); // result array was temporarily used as a buffer ..
+        $expression = preg_replace_callback("/#([0-9]+)/", [&$this, "restoreFilters"], $expression);
+        $this->result = []; // result array was temporarily used as a buffer ..
         return $expression;
     }
 
@@ -85,13 +84,14 @@ class Path
         $f = $filter[1];
         $elements = explode('\'', $f);
         // Hack to make "dot" works on filters
-        for ($i=0, $m=0; $i<count($elements); $i++) {
-            if ($m%2 == 0) {
-                if ($i > 0 && substr($elements[$i-1], 0, 1) == '\\') {
+        for ($i = 0, $m = 0; $i < count($elements); $i++) {
+            if ($m % 2 == 0) {
+                if ($i > 0 && substr($elements[$i - 1], 0, 1) == '\\') {
                     continue;
                 }
                 $e = explode('.', $elements[$i]);
-                $str = ''; $first = true;
+                $str = '';
+                $first = true;
                 foreach ($e as $substr) {
                     if ($first) {
                         $str = $substr;
@@ -99,8 +99,8 @@ class Path
                         continue;
                     }
                     $end = null;
-                    if (false !== $pos = $this->strpos_array($substr, $this->keywords)) {
-                        list($substr, $end) = array(substr($substr, 0, $pos), substr($substr, $pos, strlen($substr)));
+                    if (false !== $pos = $this->strposArray($substr, $this->keywords)) {
+                        list($substr, $end) = [substr($substr, 0, $pos), substr($substr, $pos, strlen($substr))];
                     }
                     $str .= '[' . $substr . ']';
                     if (null !== $end) {
@@ -149,7 +149,7 @@ class Path
         if ($p) {
             array_push($this->result, ($this->resultType == "PATH" ? $this->asPath($p) : $v));
         }
-        return !!$p;
+        return ! ! $p;
     }
 
     /**
@@ -165,26 +165,22 @@ class Path
             $x = implode(";", $x);
             if (is_array($val) && array_key_exists($loc, $val)) {
                 $this->trace($x, $val[$loc], $path . ";" . $loc);
-            }
-            else if ($loc == "*") {
-                $this->walk($loc, $x, $val, $path, array(&$this, "_callback_03"));
-            }
-            else if ($loc === "..") {
+            } elseif ($loc == "*") {
+                $this->walk($loc, $x, $val, $path, [&$this, "callback03"]);
+            } elseif ($loc === "..") {
                 $this->trace($x, $val, $path);
-                $this->walk($loc, $x, $val, $path, array(&$this, "_callback_04"));
-            }
-            else if (preg_match("/^\(.*?\)$/", $loc)) { // [(expr)]
+                $this->walk($loc, $x, $val, $path, [&$this, "callback04"]);
+            } elseif (preg_match("/^\(.*?\)$/", $loc)) { // [(expr)]
                 $this->trace($this->evalx($loc, $val, substr($path, strrpos($path, ";") + 1)) . ";" . $x, $val, $path);
-            }
-            else if (preg_match("/^\?\(.*?\)$/", $loc)) { // [?(expr)]
-                $this->walk($loc, $x, $val, $path, array(&$this, "_callback_05"));
-            }
-            else if (preg_match("/^(-?[0-9]*):(-?[0-9]*):?(-?[0-9]*)$/", $loc)) { // [start:end:step]  phyton slice syntax
+            } elseif (preg_match("/^\?\(.*?\)$/", $loc)) { // [?(expr)]
+                $this->walk($loc, $x, $val, $path, [&$this, "callback05"]);
+            } elseif (preg_match("/^(-?[0-9]*):(-?[0-9]*):?(-?[0-9]*)$/", $loc)) {
+                // [start:end:step]  phyton slice syntax
                 $this->slice($loc, $x, $val, $path);
-            }
-            else if (preg_match("/,/", $loc)) { // [name1,name2,...]
-                for ($s = preg_split("/'?,'?/", $loc), $i = 0, $n = count($s); $i < $n; $i++)
+            } elseif (preg_match("/,/", $loc)) { // [name1,name2,...]
+                for ($s = preg_split("/'?,'?/", $loc), $i = 0, $n = count($s); $i < $n; $i++) {
                     $this->trace($s[$i] . ";" . $x, $val, $path);
+                }
             }
         } else {
             $this->store($path, $val);
@@ -198,7 +194,7 @@ class Path
      * @param $v
      * @param $p
      */
-    private function _callback_03($m, $l, $x, $v, $p)
+    private function callback03($m, $l, $x, $v, $p)
     {
         $this->trace($m . ";" . $x, $v, $p);
     }
@@ -210,7 +206,7 @@ class Path
      * @param $v
      * @param $p
      */
-    private function _callback_04($m, $l, $x, $v, $p)
+    private function callback04($m, $l, $x, $v, $p)
     {
         if (is_array($v[$m])) {
             $this->trace("..;" . $x, $v[$m], $p . ";" . $m);
@@ -224,7 +220,7 @@ class Path
      * @param $v
      * @param $p
      */
-    private function _callback_05($m, $l, $x, $v, $p)
+    private function callback05($m, $l, $x, $v, $p)
     {
         if ($this->evalx(preg_replace("/^\?\((.*?)\)$/", "$1", $l), $v[$m])) {
             $this->trace($m . ";" . $x, $v, $p);
@@ -275,7 +271,7 @@ class Path
     private function evalx($x, $v, $vname = null)
     {
         $name = "";
-        $expr = preg_replace(array("/\\$/", "/@/"), array("\$this->obj", "\$v"), $x);
+        $expr = preg_replace(["/\\$/", "/@/"], ["\$this->obj", "\$v"], $x);
         $expr = preg_replace("#\[([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\]#", "['$1']", $expr);
 
         $res = eval("\$name = $expr;");
@@ -309,10 +305,10 @@ class Path
      * @param array $needles
      * @return bool|string
      */
-    private function strpos_array($haystack, array $needles)
+    private function strposArray($haystack, array $needles)
     {
         $closer = 10000;
-        foreach($needles as $needle) {
+        foreach ($needles as $needle) {
             if (false !== $pos = strpos($haystack, $needle)) {
                 if ($pos < $closer) {
                     $closer = $pos;

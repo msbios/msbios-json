@@ -41,12 +41,13 @@ class Store
         $this->data = $data;
         if (is_string($this->data)) {
             $this->data = Json::decode($this->data, Json::TYPE_ARRAY);
-        } else if (is_object($data)) {
+        } elseif (is_object($data)) {
             $this->data = Json::decode(Json::encode($this->data), Json::TYPE_ARRAY);
-        } else if (!is_array($data)) {
-            throw new \InvalidArgumentException(sprintf('Invalid data type in JsonStore. Expected object, array or string, got %s', gettype($data)));
+        } elseif (! is_array($data)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid data type in JsonStore. Expected object, array or string, got %s', gettype($data))
+            );
         }
-
     }
 
     /**
@@ -93,11 +94,10 @@ class Store
 
             /** @var string $expr */
             foreach ($exprs as $expr) {
-
                 $o =& $this->data;
                 $keys = preg_split(
                     "/([\"'])?\]\[([\"'])?/",
-                    preg_replace(array("/^\\$\[[\"']?/", "/[\"']?\]$/"), "", $expr)
+                    preg_replace(["/^\\$\[[\"']?/", "/[\"']?\]$/"], "", $expr)
                 );
                 for ($i = 0; $i < count($keys); $i++) {
                     $o =& $o[$keys[$i]];
@@ -107,16 +107,14 @@ class Store
             }
 
             if (true === $unique) {
-
-                if (!empty($values) && is_array($values[0])) {
-
-                    array_walk($values, function(&$value) {
+                if (! empty($values) && is_array($values[0])) {
+                    array_walk($values, function (&$value) {
                         $value = json_encode($value);
                     });
 
                     $values = array_unique($values);
 
-                    array_walk($values, function(&$value) {
+                    array_walk($values, function (&$value) {
                         $value = json_decode($value, true);
                     });
 
@@ -126,7 +124,7 @@ class Store
                 return array_unique($values);
             }
 
-            if (1 == count($values)){
+            if (1 == count($values)) {
                 $values = $values[0];
             }
 
@@ -142,7 +140,7 @@ class Store
      * @param mixed $value Value to set
      * @return bool returns true if success
      */
-    function set($expr, $value)
+    public function set($expr, $value)
     {
         $get = $this->find($expr);
         if ($res =& $get) {
@@ -166,7 +164,7 @@ class Store
         $get = $this->find($parentexpr);
         if ($parents =& $get) {
             foreach ($parents as &$parent) {
-                $parent = is_array($parent) ? $parent : array();
+                $parent = is_array($parent) ? $parent : [];
                 if ($name != "") {
                     $parent[$name] = $value;
                 } else {
@@ -192,7 +190,7 @@ class Store
                 $o =& $this->data;
                 $keys = preg_split(
                     "/([\"'])?\]\[([\"'])?/",
-                    preg_replace(array("/^\\$\[[\"']?/", "/[\"']?\]$/"), "", $expr)
+                    preg_replace(["/^\\$\[[\"']?/", "/[\"']?\]$/"], "", $expr)
                 );
                 for ($i = 0; $i < count($keys) - 1; $i++) {
                     $o =& $o[$keys[$i]];
