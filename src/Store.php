@@ -5,14 +5,15 @@
  */
 namespace MSBios\Json;
 
-use Traversable;
 use Zend\Json\Json;
+use Zend\Stdlib\ArrayObject;
 
 /**
  * Class Store
  * @package MSBios\Json
+ * @TODO: доделать работу в паре $this => ArrayObject
  */
-class Store implements \IteratorAggregate
+class Store extends ArrayObject
 {
     /** @var array  */
     private static $emptyArray = [];
@@ -25,12 +26,13 @@ class Store implements \IteratorAggregate
 
     /**
      * Store constructor.
-     * @param string|array|\stdClass $data
+     * @param array $data
      */
     public function __construct($data)
     {
         $this->path = new Path;
         $this->setData($data);
+        parent::__construct($this->data);
     }
 
     /**
@@ -220,17 +222,5 @@ class Store implements \IteratorAggregate
                 return $res;
             }
         }
-    }
-
-    /**
-     * Retrieve an external iterator
-     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
-     * @since 5.0.0
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->toArray());
     }
 }
