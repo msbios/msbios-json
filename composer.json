@@ -28,7 +28,7 @@
     "zendframework/zend-servicemanager": "^3.3",
     "zendframework/zend-modulemanager": "^2.8",
     "zendframework/zend-json": "^3.0",
-    "msbios/msbios": "^0.0.1"
+    "msbios/msbios": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7",
