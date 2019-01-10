@@ -13,5 +13,5 @@ use PHPUnit\Framework\TestCase;
  */
 class StoreTest extends TestCase
 {
-
+    // ...
 }

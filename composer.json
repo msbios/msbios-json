@@ -1,7 +1,7 @@
 {
   "name": "msbios/json",
   "description": "MSBios Json",
-  "license": "GPL",
+  "license": "MIT",
   "keywords": [
     "php"
   ],
