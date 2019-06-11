@@ -25,6 +25,8 @@
   },
   "require": {
     "zendframework/zend-json": "^3.0",
+    "peekmo/jsonpath": "^1.1",
+    "mtdowling/jmespath.php": "^2.4",
     "msbios/msbios": "^1.0"
   },
   "require-dev": {
