@@ -6,6 +6,8 @@
 
 namespace MSBios\Json;
 
+use MSBios\Json\Exception\InvalidArgumentException;
+
 /**
  * Class Path
  * @package MSBios\Json
@@ -34,7 +36,7 @@ class Path
     public function find($obj, $expr, $args = null)
     {
         if (is_object($obj)) {
-            throw new \Exception('You sent an object, not an array.');
+            throw InvalidArgumentException::youSentAnObjectNotAnArray();
         }
 
         $this->resultType = ($args ? $args['resultType'] : "VALUE");

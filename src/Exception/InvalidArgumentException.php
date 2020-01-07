@@ -21,4 +21,12 @@ class InvalidArgumentException extends \MSBios\Exception\InvalidArgumentExceptio
             sprintf('Invalid data type in JsonStore. Expected object, array or string, got %s', $data)
         );
     }
+
+    /**
+     * @return \Traversable
+     */
+    public static function youSentAnObjectNotAnArray(): \Traversable
+    {
+        return self::create('You sent an object, not an array.');
+    }
 }
