@@ -12,5 +12,5 @@ namespace MSBios\Json;
 class Module
 {
     /** @const VERSION */
-    const VERSION = '1.0.2';
+    const VERSION = '2.0.0';
 }
