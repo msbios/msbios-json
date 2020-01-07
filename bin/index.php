@@ -40,6 +40,8 @@ $str = <<<EOD
     }
 }
 EOD;
+$store = new \MSBios\Json\Store($str);
+var_dump($store->find("$..store.book[1].category"));
 
 $arr = [
     'store' => [
@@ -54,6 +56,8 @@ $arr = [
         ]
     ]
 ];
+$store = new \MSBios\Json\Store($arr);
+var_dump($store->find("$..store.book[1].category"));
 
 $std = new stdClass([
     'store' => new stdClass([
@@ -69,8 +73,5 @@ $std = new stdClass([
         ])
     ])
 ]);
-
-$store = new \MSBios\Json\Store($arr);
-// $store = new \MSBios\Json\Store($str);
-// $store = new \MSBios\Json\Store($std);
+$store = new \MSBios\Json\Store($std);
 var_dump($store->find("$..store.book[1].category"));
