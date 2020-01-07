@@ -9,8 +9,8 @@
          backupGlobals="false"
          syntaxCheck="true">
 
-    <testsuite name="MSBios Theme tests">
-        <directory>./tests</directory>
+    <testsuite name="MSBios Json tests">
+        <directory>./test</directory>
     </testsuite>
 
     <filter>

@@ -43,7 +43,7 @@ class Store extends ArrayObject
      * Sets JsonStore's manipulated data
      * @param string|array|\stdClass $data
      */
-    public function setData($data): void
+    public function setData($data)
     {
         $this->data = $data;
 
@@ -51,7 +51,7 @@ class Store extends ArrayObject
             $this->data = Decoder::decode($this->data, Json::TYPE_ARRAY);
         } elseif (is_object($data)) {
             $this->data = Decoder::decode(Json::encode($this->data), Json::TYPE_ARRAY);
-        } elseif (!is_array($data)) {
+        } elseif (! is_array($data)) {
             throw InvalidArgumentException::invalidDataTypeInJsonStore(gettype($data));
         }
     }
@@ -61,7 +61,7 @@ class Store extends ArrayObject
      *
      * @return string
      */
-    public function toString(): string
+    public function toString()
     {
         return Encoder::encode($this->data);
     }
@@ -90,55 +90,57 @@ class Store extends ArrayObject
      * @param string $expr JsonPath expression
      * @param bool $unique Gets unique results or not
      * @return array
+     * @throws \Exception
      */
     public function find($expr, $unique = false)
     {
-        if ((($exprs = $this->normalizedFirst($expr)) !== false)
-            && (is_array($exprs) || $exprs instanceof \Traversable)
-        ) {
-            /** @var array $values */
-            $values = [];
 
-            /** @var string $expr */
-            foreach ($exprs as $expr) {
-                $o =& $this->data;
-                $keys = preg_split(
-                    "/([\"'])?\]\[([\"'])?/",
-                    preg_replace(["/^\\$\[[\"']?/", "/[\"']?\]$/"], "", $expr)
-                );
-                for ($i = 0; $i < count($keys); $i++) {
-                    $o =& $o[$keys[$i]];
-                }
+        if (! (false !== ($exprs = $this->normalizedFirst($expr))
+            && (is_array($exprs) || $exprs instanceof \Traversable))) {
+            return self::$emptyArray;
+        };
 
-                $values[] = &$o;
+
+        /** @var array $values */
+        $values = [];
+
+        /** @var string $expr */
+        foreach ($exprs as $expr) {
+            $o =& $this->data;
+            $keys = preg_split(
+                "/([\"'])?\]\[([\"'])?/",
+                preg_replace(["/^\\$\[[\"']?/", "/[\"']?\]$/"], "", $expr)
+            );
+            for ($i = 0; $i < count($keys); $i++) {
+                $o =& $o[$keys[$i]];
             }
 
-            if (true === $unique) {
-                if (!empty($values) && is_array($values[0])) {
-                    array_walk($values, function (&$value) {
-                        $value = Encoder::encode($value);
-                    });
-
-                    $values = array_unique($values);
-
-                    array_walk($values, function (&$value) {
-                        $value = Decoder::decode($value, Json::TYPE_ARRAY);
-                    });
-
-                    return array_values($values);
-                }
-
-                return array_unique($values);
-            }
-
-            if (1 == count($values)) {
-                $values = $values[0];
-            }
-
-            return $values;
+            $values[] = &$o;
         }
 
-        return self::$emptyArray;
+        if (true === $unique) {
+            if (! empty($values) && is_array($values[0])) {
+                array_walk($values, function (&$value) {
+                    $value = Encoder::encode($value);
+                });
+
+                $values = array_unique($values);
+
+                array_walk($values, function (&$value) {
+                    $value = Decoder::decode($value, Json::TYPE_ARRAY);
+                });
+
+                return array_values($values);
+            }
+
+            return array_unique($values);
+        }
+
+        // if (1 == count($values)) {
+        //     $values = $values[0];
+        // }
+
+        return $values;
     }
 
     /**
@@ -146,6 +148,7 @@ class Store extends ArrayObject
      * @param string $expr JsonPath expression
      * @param mixed $value Value to set
      * @return bool returns true if success
+     * @throws \Exception
      */
     public function set($expr, $value)
     {
@@ -165,6 +168,7 @@ class Store extends ArrayObject
      * @param mixed $value Value to add
      * @param string $name Key name
      * @return bool returns true if success
+     * @throws \Exception
      */
     public function add($parentexpr, $value, $name = "")
     {

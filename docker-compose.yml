@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+
+  # php-cli
+  php-cli:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+    - .:/var/www
+    - composer:/root/.composer/cache
+
+volumes:
+  composer:
