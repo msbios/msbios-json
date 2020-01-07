@@ -3,10 +3,14 @@
  * @access protected
  * @author Judzhin Miles <info[woof-woof]msbios.com>
  */
+
 namespace MSBios\Json;
 
-use Zend\Json\Json;
-use Zend\Stdlib\ArrayObject;
+use Laminas\Json\Decoder;
+use Laminas\Json\Encoder;
+use Laminas\Json\Json;
+use Laminas\Stdlib\ArrayObject;
+use MSBios\Json\Exception\InvalidArgumentException;
 
 /**
  * Class Store
@@ -15,7 +19,7 @@ use Zend\Stdlib\ArrayObject;
  */
 class Store extends ArrayObject
 {
-    /** @var array  */
+    /** @var array */
     private static $emptyArray = [];
 
     /** @var array */
@@ -39,27 +43,27 @@ class Store extends ArrayObject
      * Sets JsonStore's manipulated data
      * @param string|array|\stdClass $data
      */
-    public function setData($data)
+    public function setData($data): void
     {
         $this->data = $data;
+
         if (is_string($this->data)) {
-            $this->data = Json::decode($this->data, Json::TYPE_ARRAY);
+            $this->data = Decoder::decode($this->data, Json::TYPE_ARRAY);
         } elseif (is_object($data)) {
-            $this->data = Json::decode(Json::encode($this->data), Json::TYPE_ARRAY);
-        } elseif (! is_array($data)) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid data type in JsonStore. Expected object, array or string, got %s', gettype($data))
-            );
+            $this->data = Decoder::decode(Json::encode($this->data), Json::TYPE_ARRAY);
+        } elseif (!is_array($data)) {
+            throw InvalidArgumentException::invalidDataTypeInJsonStore(gettype($data));
         }
     }
 
     /**
      * JsonEncoded version of the object
+     *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
-        return Json::encode($this->data);
+        return Encoder::encode($this->data);
     }
 
     /**
@@ -68,14 +72,14 @@ class Store extends ArrayObject
      */
     public function toObject()
     {
-        return Json::decode(Json::encode($this->data));
+        return Decoder::decode(Encoder::encode($this->data));
     }
 
     /**
      * Returns the given json string to array
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }
@@ -106,19 +110,19 @@ class Store extends ArrayObject
                     $o =& $o[$keys[$i]];
                 }
 
-                $values[] = & $o;
+                $values[] = &$o;
             }
 
             if (true === $unique) {
-                if (! empty($values) && is_array($values[0])) {
+                if (!empty($values) && is_array($values[0])) {
                     array_walk($values, function (&$value) {
-                        $value = json_encode($value);
+                        $value = Encoder::encode($value);
                     });
 
                     $values = array_unique($values);
 
                     array_walk($values, function (&$value) {
-                        $value = json_decode($value, true);
+                        $value = Decoder::decode($value, Json::TYPE_ARRAY);
                     });
 
                     return array_values($values);
@@ -183,6 +187,7 @@ class Store extends ArrayObject
      * Removes all elements matching the given jsonpath expression
      * @param string $expr JsonPath expression
      * @return bool returns true if success
+     * @throws \Exception
      */
     public function remove($expr)
     {
@@ -208,6 +213,7 @@ class Store extends ArrayObject
     /**
      * @param $expr
      * @return array|bool
+     * @throws \Exception
      */
     private function normalizedFirst($expr)
     {
