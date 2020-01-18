@@ -26,29 +26,13 @@
   "require": {
     "peekmo/jsonpath": "^1.1",
     "mtdowling/jmespath.php": "^2.4",
-    "msbios/msbios": "^1.0",
-    "laminas/laminas-escaper": "~2.6.1",
-    "laminas/laminas-stdlib": "~3.2.1",
-    "laminas/laminas-uri": "~2.7.1",
+    "msbios/msbios": "^2.0",
     "laminas/laminas-json": "^3.1",
-    "msbios/exception": "^1.0"
+    "msbios/exception": "^2.0"
   },
   "require-dev": {
-    "msbios/test": "^1.0",
-    "laminas/laminas-migration": "^1.0",
-    "laminas/laminas-config": "~3.3.0",
-    "laminas/laminas-console": "~2.8.0",
-    "laminas/laminas-dom": "~2.7.2",
-    "laminas/laminas-eventmanager": "~3.2.1",
-    "laminas/laminas-http": "~2.11.2",
-    "laminas/laminas-loader": "~2.6.1",
-    "laminas/laminas-modulemanager": "~2.8.4",
-    "laminas/laminas-mvc": "~3.1.1",
-    "laminas/laminas-router": "~3.3.0",
-    "laminas/laminas-servicemanager": "~3.4.0",
-    "laminas/laminas-test": "~3.3.0",
-    "laminas/laminas-validator": "~2.13.0",
-    "laminas/laminas-view": "~2.11.4"
+    "msbios/test": "^2.0",
+    "laminas/laminas-migration": "^1.0"
   },
   "scripts": {
     "cs-check": "phpcs",
